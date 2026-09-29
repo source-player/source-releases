@@ -9,7 +9,7 @@ replacement for those texts.
 Source code for every component listed here is available from the linked
 upstream project. For the GPL/LGPL-licensed components, copies of the exact
 corresponding sources are also available on request — open an issue at
-<https://github.com/grant018/source-releases/issues>.
+<https://github.com/source-player/source-releases/issues>.
 
 ---
 
@@ -192,7 +192,7 @@ macOS FFmpeg build, so these are compiled from source.
   endorsed, certified, or otherwise approved by TMDB.
   <https://www.themoviedb.org>
 - **OpenSubtitles** — subtitle search and downloads are provided by
-  OpenSubtitles (user-supplied API key). <https://www.opensubtitles.com>
+  OpenSubtitles. <https://www.opensubtitles.com>
 
 ## LGPL notice
 
