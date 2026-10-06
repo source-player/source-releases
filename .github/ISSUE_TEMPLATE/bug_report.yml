@@ -1,0 +1,56 @@
+name: Report a problem
+description: Something in source doesn't work the way it should.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Issues are public. Leave out playlist links, server addresses, usernames and passwords.
+        Rather keep it private? Email support@sourceplayer.app instead.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to get there
+      placeholder: |
+        1. Open a live channel
+        2. Press F for fullscreen
+        3. ...
+  - type: dropdown
+    id: source
+    attributes:
+      label: Where were you watching from?
+      options:
+        - Xtream Codes login
+        - M3U / M3U8 link
+        - Local folder
+        - Not about playback
+  - type: input
+    id: version
+    attributes:
+      label: source version
+      description: Settings → About
+      placeholder: "1.1.0"
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: System
+      placeholder: "Windows 11, or macOS 15"
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: app.log
+      description: Settings → About → Open log folder. Drag app.log into this box.
