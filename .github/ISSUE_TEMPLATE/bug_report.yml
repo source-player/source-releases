@@ -53,4 +53,8 @@ body:
     id: log
     attributes:
       label: app.log
-      description: Settings → About → Open log folder. Drag app.log into this box.
+      description: >-
+        This issue is public, and the log shows your provider's server address and your
+        file paths. To keep it private, email it to support@sourceplayer.app instead.
+        To post it here, use Settings → About → Open log folder, then drag app.log
+        (and app.log.old, if it's there) into this box.
