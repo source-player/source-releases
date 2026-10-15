@@ -20,13 +20,15 @@ corresponding sources are also available on request — open an issue at
 | Tauri (v2, incl. plugins: dialog, process, updater) | MIT OR Apache-2.0 | <https://github.com/tauri-apps/tauri> |
 | wry (vendored fork in `vendor/wry`) | MIT OR Apache-2.0 | <https://github.com/tauri-apps/wry> |
 | tauri-runtime-wry (vendored fork in `vendor/tauri-runtime-wry`) | MIT OR Apache-2.0 | <https://github.com/tauri-apps/tauri> |
-| Rust crate dependencies | predominantly MIT OR Apache-2.0 (see `src-tauri/Cargo.lock`) | crates.io |
+| Rust crate dependencies | predominantly MIT OR Apache-2.0 | crates.io |
 
 ## Frontend assets
 
 | Component | License | Upstream |
 |---|---|---|
 | Lucide icons | ISC | <https://github.com/lucide-icons/lucide> |
+| Fluent Emoji (Flat), Microsoft — the Explorer's emoji icons (`public/emoji/`) | MIT | <https://github.com/microsoft/fluentui-emoji> |
+| Twemoji graphics — the Explorer's flag emoji (`public/emoji/1f1*.svg`), © Twitter, Inc. and other contributors | CC-BY 4.0 | <https://github.com/jdecked/twemoji> |
 | Inter font | SIL OFL 1.1 | <https://github.com/rsms/inter> |
 | JetBrains Mono font | SIL OFL 1.1 | <https://github.com/JetBrains/JetBrainsMono> |
 | Open Sans font | SIL OFL 1.1 | <https://github.com/googlefonts/opensans> |
@@ -65,14 +67,14 @@ corresponding sources are also available on request — open an issue at
 - Prebuilt by the **zhongfly/mpv-winbuild** CI (the auto-updating fork of
   shinchiro/mpv-winbuild-cmake), which publishes ready-made LGPL libmpv
   artifacts.
-- Release tag: **`2026-07-17-94335ab87a`**, asset
-  `mpv-dev-lgpl-x86_64-20260717-git-94335ab87a.7z`
-  (SHA256 `6014aa0e6d8e98cdba90f5288295a7105d7d14ab0ca906f51465eeb478d5fea0`).
+- Release tag: **`2026-09-12-14f2d48cbc`**, asset
+  `mpv-dev-lgpl-x86_64-20260912-git-14f2d48cbc.7z`
+  (SHA256 `455965297ba3f5906a63cd2b219442685be45528a1fe806e4b228147881e41cb`).
   Upstream prunes old releases, so release builds install a byte-identical copy of that
-  artifact's contents from the developer's own archive (`win-libmpv-lgpl-2026-07-17-94335ab87a.zip`,
-  SHA256 `4caa6903d0081de63052aa94b828492f93ab9ad36152b4687fa70c89096292dd`); the engine
-  version string is verified on install.
-- Engine version string: `mpv v0.41.0-878-g94335ab87`.
+  artifact's contents from the developer's own archive (`win-libmpv-lgpl-2026-09-12-14f2d48cbc.zip`,
+  SHA256 `d7d444c12adb942dffd7934bcb02c8b53e14e606c2d919e6f7ea76aacffceaa7`); the engine
+  version string and the LGPL configuration are verified on install.
+- Engine version string: `mpv v0.41.0-1044-g14f2d48cb`.
 - Corresponding source: <https://github.com/zhongfly/mpv-winbuild> (build
   recipe) → mpv <https://github.com/mpv-player/mpv> and FFmpeg
   <https://ffmpeg.org> at the pinned commits. Also available on request via
@@ -82,7 +84,8 @@ The single `libmpv-2.dll` statically links LGPL/permissive libraries only:
 LGPL FFmpeg (built **without** `--enable-gpl`), libass (ISC), dav1d
 (BSD-2-Clause), libplacebo (LGPL), SVT-AV1 (BSD), and friends. **No GPL-only
 components** — x264, x265, and Rubber Band are deliberately excluded (verified
-by binary inspection of the shipped DLL, 2026-07-17). x264/x265 are *encoders*
+by binary inspection of the shipped DLL, 2026-07-17 and again 2026-10-03 for the current pin,
+and checked automatically on every install). x264/x265 are *encoders*
 a player never uses; pitch-preserving speed is handled by mpv's built-in
 `scaletempo2` (LGPL), not Rubber Band. The libmpv client API header is ISC.
 
@@ -112,7 +115,6 @@ a player never uses; pitch-preserving speed is handled by mpv's built-in
 - Corresponding source: <https://github.com/media-kit/libmpv-darwin-build> (build
   recipe) → mpv <https://github.com/mpv-player/mpv> and FFmpeg <https://ffmpeg.org>
   at the pinned versions. Also available on request via the issue tracker.
-- Installed by `scripts/fetch-macos-libmpv-lgpl.sh`; see `docs/setup/libmpv-macos.md`.
 
 These 18 dylibs are **LGPL or permissive only** — no GPL components. x264, x265,
 and Rubber Band are deliberately absent (verified by inspecting the shipped
@@ -124,10 +126,9 @@ libmpv client API header is ISC.
 
 | Component | License | Upstream |
 |---|---|---|
-| FFmpeg (`ffmpeg.exe`, `ffprobe.exe`, bundled as Tauri sidecar binaries) | **LGPL-2.1-or-later / LGPL-3.0-or-later** (BtbN's `win64-lgpl` build — no `--enable-gpl`) | <https://ffmpeg.org> |
+| FFmpeg (`ffmpeg.exe`, `ffprobe.exe`, bundled as Tauri sidecar binaries) | **LGPL-3.0-or-later** (`--enable-version3`, no `--enable-gpl`, no `--enable-nonfree`) | <https://ffmpeg.org> |
 
-These are the same FFmpeg tools used by casting's local media server (`cast_server/`, see
-[docs/architecture/casting.md](docs/architecture/casting.md)) to probe source media and, when a
+These are the same FFmpeg tools used by casting's local media server to probe source media and, when a
 Chromecast can't decode a file as-is, remux or hardware-transcode it on the fly. They are
 distinct from the FFmpeg code statically linked into libmpv above — these ship as **separate,
 unmodified executable files** invoked as ordinary child processes (never linked into the app
@@ -136,22 +137,33 @@ document provenance for regardless.
 
 **Provenance:**
 
-- Prebuilt by **BtbN/FFmpeg-Builds**, which publishes ready-made LGPL Windows FFmpeg binaries.
-- Build: `ffmpeg-n8.1.2-34-g9b6c8969e0-win64-lgpl-8.1.zip` from the pinned release tag
-  `autobuild-2026-08-03-14-02` at <https://github.com/BtbN/FFmpeg-Builds/releases> — installed
-  (and its LGPL configuration verified) by `tools/fetch-ffmpeg-win.sh`, which pins the tag and
-  the archive's SHA-256 and refuses any GPL-configured artifact. BtbN prunes old auto-builds,
-  so release builds install a byte-identical copy of that archive's `ffmpeg.exe`/`ffprobe.exe`
-  from the developer's own archive (`win-ffmpeg-lgpl-autobuild-2026-08-03-14-02.zip`, SHA256
-  `4784d2abc45dd7ecf3b1ae8949e5c266166d138d780ff4ae4f00f6375b4da500`); the LGPL check runs on install.
-- Version string (from `ffmpeg -version`): **`n8.1.2-34-g9b6c8969e0-20260803`**.
-- Built with `--disable-libx264 --disable-libx265` and no other GPL-only components (`--enable-gpl`
-  is not set) — verified via the build's own `-version` banner, which lists its `configure` flags.
-- Corresponding source: <https://ffmpeg.org> (upstream FFmpeg) at the pinned commit encoded in the
-  version string above, via the BtbN build recipe: <https://github.com/BtbN/FFmpeg-Builds>. Also
-  available on request via the issue tracker.
-- No source modifications; the binaries are used exactly as downloaded, invoked as separate OS
-  processes (never dynamically or statically linked into `src-tauri`'s own binary).
+- Built by us from unmodified upstream FFmpeg source inside
+  **BtbN/FFmpeg-Builds**' `win64-lgpl-8.1` Docker image (pinned by digest), which
+  supplies the mingw-w64 toolchain and the statically linked LGPL/permissive dependencies listed
+  below. Configured `--disable-everything` and then only the components casting uses (every
+  decoder/demuxer/protocol is kept; encoders, muxers and filters are cut to the cast pipeline), so
+  the binaries are ~38 MB each instead of the stock build's 113 MB. The exact `configure` line is
+  in each binary's own `-version` banner.
+- Release builds install the archive `win-ffmpeg-lgpl-n8.1.2-34-g9b6c8969e0-source-slim3.zip` from
+  the developer's own archive, pinned by SHA-256; the install refuses any GPL- or
+  nonfree-configured artifact (or one missing a component casting depends on).
+- Version string (from `ffmpeg -version`): **`n8.1.2-34-g9b6c8969e0-source-slim3`**. The
+  same binaries also make local-folder thumbnails (one JPEG frame per video; HDR frames are
+  tone-mapped with zimg).
+- Statically linked libraries: dav1d (BSD-2-Clause), libass (ISC) with Fontconfig (MIT-style),
+  libunibreak (zlib), FreeType (FTL), HarfBuzz (MIT) and FriBidi (LGPL-2.1-or-later), libxml2
+  (MIT), zlib (zlib), liblzma (0BSD), libiconv (LGPL-2.1-or-later), GMP (LGPL-3.0-or-later), SRT
+  (MPL-2.0) with OpenSSL (Apache-2.0), oneVPL dispatcher (MIT), zimg 3.0.6 (WTFPL — the `zscale`
+  filter; not on FFmpeg's GPL, nonfree or version3 library lists); nv-codec-headers (MIT) and the
+  AMF headers (MIT) are headers only.
+- No GPL-only components: `--enable-gpl` and `--enable-nonfree` are not set, and libx264/libx265
+  are not built.
+- Corresponding source: upstream FFmpeg <https://github.com/FFmpeg/FFmpeg> at commit
+  `9b6c8969e05b4f0b29f0f85cd501be6b3e582e6b` (`n8.1.2-34-g9b6c8969e0`, branch `release/8.1`),
+  built with the dependency recipes of <https://github.com/BtbN/FFmpeg-Builds>. Also available
+  on request via the issue tracker.
+- No source modifications; the binaries are invoked as separate OS processes (never dynamically
+  or statically linked into `src-tauri`'s own binary).
 
 ## Media engine — macOS casting media plane (bundled FFmpeg sidecars)
 
@@ -163,6 +175,7 @@ document provenance for regardless.
 | FreeType 2.14.3 (statically linked) | FTL (BSD-style, with credit) | <https://freetype.org> |
 | FriBidi 1.0.16 (statically linked) | LGPL-2.1-or-later | <https://github.com/fribidi/fribidi> |
 | HarfBuzz 14.3.0 (statically linked) | MIT-derived ("Old MIT") | <https://github.com/harfbuzz/harfbuzz> |
+| zimg 3.0.6 (the `zscale` filter for HDR thumbnails, statically linked; sidecars built from Oct 2026) | WTFPL | <https://github.com/sekrit-twc/zimg> |
 
 Same role as the Windows sidecars above (probe + remux/transcode for casting), same
 "mere aggregation" relationship to the app: separate, separately-invoked executables,
@@ -171,10 +184,10 @@ macOS FFmpeg build, so these are compiled from source.
 
 **Provenance:**
 
-- Built from unmodified upstream release tarballs by `scripts/build-macos-ffmpeg-lgpl.sh`,
-  which pins every version listed above **and each tarball's SHA-256**, and refuses to
-  install a result whose `-version` banner shows `--enable-gpl`/`--enable-nonfree` or any
-  x264/x265 reference — the same refusal model as `tools/fetch-ffmpeg-win.sh`.
+- Built from unmodified upstream release tarballs, pinned to every version listed above
+  **and each tarball's SHA-256**; the build refuses to install a result whose `-version`
+  banner shows `--enable-gpl`/`--enable-nonfree` or any x264/x265 reference — the same
+  check the Windows sidecars get.
 - Configured `--disable-gpl` (shown in the binary's own `-version` configuration line);
   no GPL components are compiled in. Hardware H.264 encoding uses Apple's VideoToolbox
   system framework; TLS uses Apple's SecureTransport system framework; fonts resolve via
@@ -182,9 +195,9 @@ macOS FFmpeg build, so these are compiled from source.
 - The third-party libraries in the table are **statically linked into the sidecar
   executables** (which link only macOS system frameworks and `/usr/lib` beyond that);
   all are LGPL-compatible permissive licenses except FriBidi, which is itself LGPL.
-- Corresponding source: the pinned upstream release tarballs named in
-  `scripts/build-macos-ffmpeg-lgpl.sh` (ffmpeg.org, VideoLAN, GitHub releases,
-  Savannah). Also available on request via the issue tracker.
+- Corresponding source: the upstream release tarballs of the versions in the table above
+  (ffmpeg.org, VideoLAN, GitHub releases, Savannah). Also available on request via the
+  issue tracker.
 
 ## Services (attribution)
 
@@ -210,7 +223,7 @@ the app bundle's `Frameworks` folder on macOS) or, for the FFmpeg sidecars,
 **separately-invoked executables** (`ffmpeg.exe`/`ffprobe.exe` on Windows,
 `ffmpeg`/`ffprobe` on macOS, run as ordinary child processes, never linked into
 the app binary; the macOS pair is compiled from unmodified pinned upstream
-sources by `scripts/build-macos-ffmpeg-lgpl.sh`). Accordingly,
+sources). Accordingly,
 under the LGPL you may replace them with your own modified builds, and may
 reverse engineer and modify the application as necessary to debug such
 modifications — see Section 3 of the `LICENSE` file, which preserves these
@@ -220,5 +233,5 @@ License texts: LGPL-2.1 <https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
 · LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>.
 
 Complete corresponding source for the LGPL components is available from the
-pinned upstream builds identified in the two "Provenance" blocks above, or on
+pinned upstream sources identified in the four "Provenance" blocks above, or on
 request via the issue tracker.
